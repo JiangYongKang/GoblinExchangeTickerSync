@@ -3,6 +3,7 @@ package com.vincent.exchange.websocket;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -13,18 +14,23 @@ import java.net.Proxy;
 @Component
 public class OkExSubscribeClient {
 
-    private static final String WSS_URL = "wss://ws.okex.com:8443/ws/v5/public";
-    private static final String LOCAL_PROXY_HOST = "127.0.0.1";
-    private static final Integer LOCAL_PROXY_PORT = 1087;
+    @Value("${okex.subscribe.url}")
+    private String subscribeUrl;
+
+    @Value("${http.proxy.host}")
+    private String host;
+
+    @Value("${http.proxy.port}")
+    private Integer port;
 
     @Resource
     private OkExWebSocketListener webSocketListener;
 
     public void connect() {
         log.info("connecting okex...");
-        Proxy localProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(LOCAL_PROXY_HOST, LOCAL_PROXY_PORT));
+        Proxy localProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(host, port));
         OkHttpClient client = new OkHttpClient.Builder().proxy(localProxy).retryOnConnectionFailure(true).build();
-        Request request = new Request.Builder().url(WSS_URL).build();
+        Request request = new Request.Builder().url(subscribeUrl).build();
         client.dispatcher().cancelAll();
         client.newWebSocket(request, webSocketListener);
         log.info("connected okex...");

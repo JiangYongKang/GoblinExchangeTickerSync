@@ -5,11 +5,11 @@ import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
 
 @Slf4j
 @Component
@@ -42,6 +42,7 @@ public class OkExWebSocketListener extends WebSocketListener {
     @Override
     public void onFailure(@NotNull WebSocket webSocket, @NotNull Throwable t, @Nullable Response response) {
         log.info("[OkEx] => Subscribe channel on failure");
+        t.printStackTrace();
         okExSubscribeClient.connect();
     }
 

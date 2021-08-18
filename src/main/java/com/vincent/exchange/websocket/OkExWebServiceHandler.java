@@ -26,6 +26,10 @@ public class OkExWebServiceHandler {
     public void subscribeTickers(WebSocket webSocket, Response response) {
         webSocket.send("{\"op\":\"subscribe\",\"args\":[{\"channel\":\"tickers\",\"instId\":\"BTC-USDT\"}]}");
         webSocket.send("{\"op\":\"subscribe\",\"args\":[{\"channel\":\"tickers\",\"instId\":\"ETH-USDT\"}]}");
+        webSocket.send("{\"op\":\"subscribe\",\"args\":[{\"channel\":\"candle1m\",\"instId\":\"BTC-USDT\"}]}");
+        webSocket.send("{\"op\":\"subscribe\",\"args\":[{\"channel\":\"candle1m\",\"instId\":\"ETH-USDT\"}]}");
+        webSocket.send("{\"op\":\"subscribe\",\"args\":[{\"channel\":\"trades\",\"instId\":\"BTC-USDT\"}]}");
+        webSocket.send("{\"op\":\"subscribe\",\"args\":[{\"channel\":\"trades\",\"instId\":\"ETH-USDT\"}]}");
     }
 
     public void doReceiveMessage(WebSocket webSocket, String text) {
@@ -35,7 +39,7 @@ public class OkExWebServiceHandler {
         String instrumentId = JSONUtil.getByPath(messageJson, "$.arg.instId", "").toUpperCase();
         Double timestamp = JSONUtil.getByPath(messageJson, "$.data[0].ts", Double.MIN_VALUE);
         if (messageData != null) {
-            String key = String.format("%s:%s", channel, instrumentId);
+            String key = String.format("OKEX-%s-%s", channel, instrumentId);
             redisTemplate.opsForZSet().add(key, messageData, timestamp);
         }
     }
